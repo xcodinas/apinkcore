@@ -47,10 +47,9 @@ class DeviceResource(Resource):
             device = SwitchDevice.query.filter_by(id=args.id).first()
         else:
             device = SwitchDevice.query.filter_by(name=args.name).first()
-        print(device)
         if not device:
             return False
-        device.on = args.on if args.on else device.on
+        device.on = args.on if args.on != None else device.on
         device.name = args.name if args.name else device.name
         device.ip_address = (
             args.ip_address if args.ip_address else device.ip_address)
