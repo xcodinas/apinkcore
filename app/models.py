@@ -51,4 +51,11 @@ class ValuesHistory(db.Model):
     moisture = db.Column(db.Float)
 
 
+class SwitchDevice(db.Model, TimestampsMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String, nullable=False)
+    mac_address = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    on = db.Column(db.Boolean, default=False)
+
 User.register()

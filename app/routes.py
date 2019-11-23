@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import reqparse, marshal
 
 from app import app, db
-from app.models import User, ValuesHistory
+from app.models import User, ValuesHistory, SwitchDevice
 from app.fields import user_fields, non_empty_string, values_history_fields
 from app.utils import valid_email, abort, recover_data
 
@@ -73,15 +73,19 @@ def register():
     return jsonify(marshal(user, user_fields))
 
 
-@app.route('/switch/<state>')
-def switch(state):
+@app.route('/switch/<device>/<state>')
+def switch(device, state):
+    device = (SwitchDevice.query.filter_by(name=device).first() or
+        SwitchDevice.query.filter_by(id=device).first())
+    if not device:
+        return jsonify('Device not found'), 400
     if state == 'on':
-        requests.post('https://maker.ifttt.com/trigger/switch_open/with/key' +
-            '/%s' % Config.IFTTT)
+        requests.post(('https://maker.ifttt.com/trigger/%s_open/with/key' +
+            '/%s') % (device.name, Config.IFTTT))
         return jsonify('ok'), 200
     elif state == 'off':
-        requests.post('https://maker.ifttt.com/trigger/switch_close/with/' +
-            'key/%s' % Config.IFTTT)
+        requests.post(('https://maker.ifttt.com/trigger/%s_close/with/' +
+            'key/%s') % (device.name, Config.IFTTT))
         return jsonify('ok'), 200
 
 

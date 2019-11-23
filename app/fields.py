@@ -24,3 +24,11 @@ values_history_fields = {
     'measured_at': fields.DateTime,
     'received_at': fields.DateTime,
 }
+
+device_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'ip_address': fields.String,
+    'mac_address': fields.String,
+    'on': fields.Boolean,
+}
