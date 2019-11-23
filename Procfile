@@ -1,1 +1,1 @@
-web: gunicorn uwsgi.conf -t 60
+web: flask run
