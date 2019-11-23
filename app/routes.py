@@ -27,6 +27,7 @@ login_parser.add_argument('password', required=True,
 help="Password cannot be blank!")
 
 
+@app.route('/status', methods=['GET'])
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({}), 200
