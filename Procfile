@@ -1,1 +1,1 @@
-web: uwsgi uwsgi.conf -t 60
+web: gunicorn uwsgi.conf -t 60
