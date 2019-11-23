@@ -1,3 +1,6 @@
+import logging
+import sys
+
 from werkzeug.exceptions import HTTPException
 
 from flask import Flask
@@ -17,7 +20,9 @@ class SQLAlchemy(_BaseSQLAlchemy):
         options["pool_pre_ping"] = True
 
 
-app = Flask(__name__, static_folder='static', static_url_path='')
+app = Flask(__name__)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 
 
 class Api(_Api):
