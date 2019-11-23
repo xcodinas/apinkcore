@@ -25,6 +25,7 @@ setup(
         'passlib',
         'sentry-sdk[flask]==0.8.0',
         'requests',
+        'psycopg2-binary',
     ],
     long_description=read('README.md'),
     classifiers=[
