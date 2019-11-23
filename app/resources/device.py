@@ -43,11 +43,11 @@ class DeviceResource(Resource):
     @marshal_with(device_fields)
     def put(self):
         args = device_parser.parse_args()
-        print(args)
         if args.id:
             device = SwitchDevice.query.filter_by(id=args.id).first()
         else:
             device = SwitchDevice.query.filter_by(name=args.name).first()
+        print(device)
         if not device:
             return False
         device.on = args.on if args.on else device.on
