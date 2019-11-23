@@ -82,10 +82,14 @@ def switch(device, state):
     if state == 'on':
         requests.post(('https://maker.ifttt.com/trigger/%s_open/with/key' +
             '/%s') % (device.name, Config.IFTTT))
+        device.on = True
+        db.session.commit()
         return jsonify('ok'), 200
     elif state == 'off':
         requests.post(('https://maker.ifttt.com/trigger/%s_close/with/' +
             'key/%s') % (device.name, Config.IFTTT))
+        device.on = False
+        db.session.commit()
         return jsonify('ok'), 200
 
 
