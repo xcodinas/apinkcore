@@ -84,3 +84,37 @@ def abort(code, json=False, *args, **kwargs):
             'error': {}}
     response['error'] = kwargs
     return jsonify(response) if json else response, code
+
+
+class DataInfo:
+    def __init__(self, temperature, moisture):
+        self.temperature = temperature
+        self.moisture = moisture
+
+    def __repr__(self):
+        return f"""<DataInfo temperature:{self.temperature}
+            moisture:{self.moisture}>"""
+
+    def __str__(self):
+        return self._repr_()
+
+    @staticmethod
+    def undo_byte_cod(byte):
+        return int(byte) - 27
+
+    @staticmethod
+    def from_byte_array(byte_arr):
+        pre = DataInfo.undo_byte_cod(byte_arr[0])
+        post = DataInfo.undo_byte_cod(byte_arr[1])
+        moisture = DataInfo.undo_byte_cod(byte_arr[2])
+        temperature = float(f'{pre}.{post}')
+        return DataInfo(temperature, moisture)
+
+
+def grouped(iterable, n):
+    return zip(*[iter(iterable)] * n)
+
+
+def recover_data(hex):
+    byte_data = bytes.fromhex(hex)
+    return list(map(DataInfo.from_byte_array, grouped(byte_data, 3)))

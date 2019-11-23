@@ -1,12 +1,13 @@
+import datetime
 import requests
-from flask import jsonify
+from flask import jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import reqparse, marshal
 
 from app import app, db
-from app.models import User
-from app.fields import user_fields, non_empty_string
-from app.utils import valid_email, abort
+from app.models import User, ValuesHistory
+from app.fields import user_fields, non_empty_string, values_history_fields
+from app.utils import valid_email, abort, recover_data
 
 from config import Config
 
@@ -82,3 +83,27 @@ def switch(state):
         requests.post('https://maker.ifttt.com/trigger/switch_close/with/' +
             'key/%s' % Config.IFTTT)
         return jsonify('ok'), 200
+
+
+@app.route('/sigfox', methods=['POST'])
+def sigfox():
+    measurement_time = datetime.datetime.now()
+    if request.form.get('time'):
+        hour, minute = request.form.get('time').split(':')
+        measurement_time = measurement_time.replace(
+            hour=int(hour), minute=int(minute))
+    if request.form.get('data'):
+        values = recover_data(request.form.get('data'))
+        for index, value in enumerate(values):
+            db.session.add(ValuesHistory(
+                    measured_at=measurement_time + datetime.timedelta(
+                        minutes=(10 / len(values)) * index),
+                    moisture=value.moisture,
+                    temperature=value.temperature))
+        db.session.commit()
+    return jsonify('ok'), 200
+
+@app.route('/history')
+def history():
+    history = ValuesHistory.query.order_by(ValuesHistory.measured_at).all()
+    return jsonify(marshal(history, values_history_fields)), 200

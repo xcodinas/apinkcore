@@ -16,3 +16,11 @@ user_fields = {
     'full_name': fields.String,
     'email': fields.String,
 }
+
+values_history_fields = {
+    'id': fields.Integer,
+    'temperature': fields.Float,
+    'moisture': fields.Float,
+    'measured_at': fields.DateTime,
+    'received_at': fields.DateTime,
+}
