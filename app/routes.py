@@ -1,3 +1,4 @@
+import requests
 from flask import jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import reqparse, marshal
@@ -6,6 +7,8 @@ from app import app, db
 from app.models import User
 from app.fields import user_fields, non_empty_string
 from app.utils import valid_email, abort
+
+from config import Config
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('email', type=non_empty_string, required=True,
@@ -67,3 +70,15 @@ def register():
     db.session.add(user)
     db.session.commit()
     return jsonify(marshal(user, user_fields))
+
+
+@app.route('/switch/<state>')
+def switch(state):
+    if state == 'on':
+        requests.post('https://maker.ifttt.com/trigger/switch_open/with/key' +
+            '/%s' % Config.IFTTT)
+        return jsonify('ok'), 200
+    elif state == 'off':
+        requests.post('https://maker.ifttt.com/trigger/switch_close/with/' +
+            'key/%s' % Config.IFTTT)
+        return jsonify('ok'), 200

@@ -15,3 +15,4 @@ class Config(object):
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     JWT_SECRET_KEY = 'apinkcore'
     JSON_SORT_KEYS = False
+    IFTTT = 'dMdDr_P-TtKvJYRlNXU-bP'
