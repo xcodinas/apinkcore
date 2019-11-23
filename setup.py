@@ -24,6 +24,7 @@ setup(
         'Flask-jwt-extended',
         'passlib',
         'sentry-sdk[flask]==0.8.0',
+        'gunicorn',
     ],
     long_description=read('README.md'),
     classifiers=[
