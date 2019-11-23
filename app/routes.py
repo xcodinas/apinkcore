@@ -94,14 +94,16 @@ def sigfox():
             hour=int(hour), minute=int(minute))
     if request.form.get('data'):
         values = recover_data(request.form.get('data'))
-        for index, value in enumerate(values):
+        for index, value in enumerate(reversed(values)):
             db.session.add(ValuesHistory(
-                    measured_at=measurement_time + datetime.timedelta(
+                    measured_at=measurement_time - datetime.timedelta(
                         minutes=(10 / len(values)) * index),
                     moisture=value.moisture,
-                    temperature=value.temperature))
+                    temperature=value.temperature,
+                    received_at=datetime.datetime.now()))
         db.session.commit()
     return jsonify('ok'), 200
+
 
 @app.route('/history')
 def history():
