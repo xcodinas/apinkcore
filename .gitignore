@@ -1,0 +1,12 @@
+__pycache__
+*.db
+app/messages.pot
+.idea
+
+.eggs
+.DS_Store
+dist
+build
+
+*.swp
+*-info/
