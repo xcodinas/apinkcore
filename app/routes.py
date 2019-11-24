@@ -107,8 +107,8 @@ def sigfox():
     if temperature_configuration:
         temperature_min, temperature_max = (
             temperature_configuration.value.split(','))
-        if (float(temperature_min) <= values[-1].temperature
-                or float(temperature_max) >= values[-1].temperature):
+        if (float(temperature_min) > values[-1].temperature
+                or float(temperature_max) < values[-1].temperature):
             device = SwitchDevice.query.first()
             toggle_switch(device.name, 'off')
         else:
