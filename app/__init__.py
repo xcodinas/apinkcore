@@ -39,10 +39,12 @@ jwt = JWTManager(app)
 
 from app.resources.user import UserResource
 from app.resources.device import DeviceResource
+from app.resources.configuration import ConfigurationResource
 
 # User
 api.add_resource(UserResource, '/user')
 api.add_resource(DeviceResource, '/device')
+api.add_resource(ConfigurationResource, '/configuration')
 
 from app import routes
 from app import utils

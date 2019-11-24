@@ -58,4 +58,10 @@ class SwitchDevice(db.Model, TimestampsMixin):
     name = db.Column(db.String, nullable=False)
     on = db.Column(db.Boolean, default=False)
 
+
+class Configuration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True)
+    value = db.Column(db.String)
+
 User.register()

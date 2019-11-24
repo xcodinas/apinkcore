@@ -32,3 +32,9 @@ device_fields = {
     'mac_address': fields.String,
     'on': fields.Boolean,
 }
+
+configuration_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'value': fields.String,
+}

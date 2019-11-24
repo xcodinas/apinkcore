@@ -1,15 +1,13 @@
 import datetime
-import requests
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import reqparse, marshal
 
 from app import app, db
-from app.models import User, ValuesHistory, SwitchDevice
+from app.models import User, ValuesHistory, SwitchDevice, Configuration
 from app.fields import user_fields, non_empty_string, values_history_fields
-from app.utils import valid_email, abort, recover_data
+from app.utils import valid_email, abort, recover_data, toggle_switch
 
-from config import Config
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('email', type=non_empty_string, required=True,
@@ -79,18 +77,12 @@ def switch(device, state):
         SwitchDevice.query.filter_by(id=device).first())
     if not device:
         return jsonify('Device not found'), 400
-    if state == 'on':
-        requests.post(('https://maker.ifttt.com/trigger/%s_open/with/key' +
-            '/%s') % (device.name, Config.IFTTT))
+    if toggle_switch(device.name, state):
         device.on = True
-        db.session.commit()
-        return jsonify('ok'), 200
-    elif state == 'off':
-        requests.post(('https://maker.ifttt.com/trigger/%s_close/with/' +
-            'key/%s') % (device.name, Config.IFTTT))
+    else:
         device.on = False
-        db.session.commit()
-        return jsonify('ok'), 200
+    db.session.commit()
+    return jsonify('ok'), 200
 
 
 @app.route('/sigfox', methods=['POST'])
@@ -110,6 +102,17 @@ def sigfox():
                     temperature=value.temperature,
                     received_at=datetime.datetime.now()))
         db.session.commit()
+    temperature_configuration = Configuration.query.filter_by(
+        name='temperature_interval').first()
+    if temperature_configuration:
+        temperature_min, temperature_max = (
+            temperature_configuration.value.split(','))
+        if (float(temperature_min) <= values[-1].temperature
+                or float(temperature_max) >= values[-1].temperature):
+            device = SwitchDevice.query.first()
+            toggle_switch(device.name, 'off')
+        else:
+            toggle_switch(device.name, 'on')
     return jsonify('ok'), 200
 
 

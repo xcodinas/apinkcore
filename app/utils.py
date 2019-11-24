@@ -1,3 +1,4 @@
+import requests
 import re
 from functools import wraps, lru_cache
 
@@ -9,6 +10,7 @@ from flask_jwt_extended import get_jwt_identity, \
 
 from app import db, app
 from app.models import User
+from config import Config
 
 
 TAG_RE = re.compile(r'<[^>]+>')
@@ -118,3 +120,14 @@ def grouped(iterable, n):
 def recover_data(hex):
     byte_data = bytes.fromhex(hex)
     return list(map(DataInfo.from_byte_array, grouped(byte_data, 3)))
+
+
+def toggle_switch(name, state):
+    if state == 'on':
+        requests.post(('https://maker.ifttt.com/trigger/%s_open/with/key' +
+            '/%s') % (name, Config.IFTTT))
+        return True
+    elif state == 'off':
+        requests.post(('https://maker.ifttt.com/trigger/%s_close/with/' +
+            'key/%s') % (name, Config.IFTTT))
+        return False
